@@ -14,7 +14,7 @@ export const errorHandler = (
 ) => {
   console.error(err);
 
-  // External API 502 errors
+  
   if (err.statusCode === 502 && err.api) {
     return res.status(502).json({
       status: 'error',
@@ -22,7 +22,6 @@ export const errorHandler = (
     });
   }
 
-  // Generic server error
   return res.status(500).json({
     status: 'error',
     message: 'Internal server error',
