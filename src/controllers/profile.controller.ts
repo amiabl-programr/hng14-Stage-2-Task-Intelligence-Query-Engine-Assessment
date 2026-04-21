@@ -5,10 +5,22 @@ import {
 } from '../services/profile.service.js';
 
 
+const formatProfileFull = (profile: any) => ({
+  id: profile.id,
+  name: profile.name,
+  gender: profile.gender,
+  gender_probability: profile.gender_probability,
+  age: profile.age,
+  age_group: profile.age_group,
+  country_id: profile.country_id,
+  country_name: profile.country_name,
+  country_probability: profile.country_probability,
+  created_at: profile.created_at,
+});
+
 
 export const getProfiles = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    // Parse query parameters
     const {
       gender,
       country_id,
@@ -23,7 +35,7 @@ export const getProfiles = async (req: Request, res: Response, next: NextFunctio
       limit = '10',
     } = req.query;
 
-    // Validate query parameters
+
     let pageNum = parseInt(page as string, 10);
     let limitNum = parseInt(limit as string, 10);
 
@@ -104,7 +116,6 @@ export const searchProfiles = async (req: Request, res: Response, next: NextFunc
       return res.status(400).json({ status: 'error', message: 'Query parameter q is required' });
     }
 
-    // Parse natural language query
     const filters = parseNaturalLanguageQuery(q);
 
     if (filters === null) {
@@ -114,7 +125,6 @@ export const searchProfiles = async (req: Request, res: Response, next: NextFunc
       });
     }
 
-    // Parse pagination parameters
     let pageNum = parseInt(page as string, 10);
     let limitNum = parseInt(limit as string, 10);
 
@@ -145,16 +155,4 @@ export const searchProfiles = async (req: Request, res: Response, next: NextFunc
 
 
 
-// Full profile shape for list/search endpoints
-const formatProfileFull = (profile: any) => ({
-  id: profile.id,
-  name: profile.name,
-  gender: profile.gender,
-  gender_probability: profile.gender_probability,
-  age: profile.age,
-  age_group: profile.age_group,
-  country_id: profile.country_id,
-  country_name: profile.country_name,
-  country_probability: profile.country_probability,
-  created_at: profile.created_at,
-});
+

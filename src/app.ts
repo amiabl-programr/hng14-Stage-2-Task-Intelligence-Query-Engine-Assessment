@@ -14,15 +14,15 @@ app.use((req, res, next) => {
 
 app.use(express.json());
 
-// Routes
+
 app.use('/api/profiles', profilesRouter);
 
-// 404 fallback
+
 app.use((req, res) => {
   res.status(404).json({ status: 'error', message: 'Route not found' });
 });
 
-// Global error handler
+
 app.use(errorHandler);
 
 export default app;

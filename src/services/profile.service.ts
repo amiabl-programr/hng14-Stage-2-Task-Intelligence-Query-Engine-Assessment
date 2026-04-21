@@ -9,17 +9,14 @@ export const listProfiles = async (filters: ProfileFilters, options: QueryOption
   return getAllProfiles(filters, options);
 };
 
-/**
- * Natural language query parser
- * Converts plain English queries to profile filters
- */
+
 export const parseNaturalLanguageQuery = (query: string): ProfileFilters | null => {
-  const lowerQuery = query.toLowerCase().trim();
+  const changeQueryToLowerCase = query.toLowerCase().trim();
   const filters: ProfileFilters = {};
 
-  // Parse gender - handle "male and female" cases properly
-  const hasMale = lowerQuery.includes('male');
-  const hasFemale = lowerQuery.includes('female');
+ 
+  const hasMale = changeQueryToLowerCase.includes('male');
+  const hasFemale = changeQueryToLowerCase.includes('female');
   
   // If both male and female are mentioned, we should not set gender filter
   // This handles cases like "male and female teenagers above 17" correctly
@@ -28,28 +25,27 @@ export const parseNaturalLanguageQuery = (query: string): ProfileFilters | null 
   } else if (hasFemale && !hasMale) {
     filters.gender = 'female';
   }
-  // If both or neither are mentioned, don't set gender filter
+  // If both or neither are mentioned, don't set gender filter`
 
   // Parse age groups
-  if (lowerQuery.includes('child') || lowerQuery.includes('children')) {
+  if (changeQueryToLowerCase.includes('child') || changeQueryToLowerCase.includes('children')) {
     filters.age_group = 'child';
-  } else if (lowerQuery.includes('teenager') || lowerQuery.includes('teens')) {
+  } else if (changeQueryToLowerCase.includes('teenager') || changeQueryToLowerCase.includes('teens')) {
     filters.age_group = 'teenager';
-  } else if (lowerQuery.includes('adult') && !lowerQuery.includes('senior')) {
+  } else if (changeQueryToLowerCase.includes('adult') && !changeQueryToLowerCase.includes('senior')) {
     filters.age_group = 'adult';
-  } else if (lowerQuery.includes('senior')) {
+  } else if (changeQueryToLowerCase.includes('senior')) {
     filters.age_group = 'senior';
   }
 
-  // Parse age ranges
-  // "young" typically refers to ages 16-24
-  if (lowerQuery.includes('young')) {
+
+  if (changeQueryToLowerCase.includes('young')) {
     filters.min_age = 16;
     filters.max_age = 24;
   }
 
   // Check for "above X" or "over X" patterns
-  const aboveMatch = lowerQuery.match(/(?:above|over)\s+(\d+)/);
+  const aboveMatch = changeQueryToLowerCase.match(/(?:above|over)\s+(\d+)/);
   if (aboveMatch) {
     const age = parseInt(aboveMatch[1], 10);
     if (!isNaN(age)) {
@@ -58,7 +54,7 @@ export const parseNaturalLanguageQuery = (query: string): ProfileFilters | null 
   }
 
   // Check for "below X" or "under X" patterns
-  const belowMatch = lowerQuery.match(/(?:below|under)\s+(\d+)/);
+  const belowMatch = changeQueryToLowerCase.match(/(?:below|under)\s+(\d+)/);
   if (belowMatch) {
     const age = parseInt(belowMatch[1], 10);
     if (!isNaN(age)) {
@@ -66,7 +62,7 @@ export const parseNaturalLanguageQuery = (query: string): ProfileFilters | null 
     }
   }
 
-  // Parse countries - map country names to country IDs
+
   const countryMap: Record<string, string> = {
     'nigeria': 'NG',
     'nigerian': 'NG',
@@ -143,14 +139,14 @@ export const parseNaturalLanguageQuery = (query: string): ProfileFilters | null 
   };
 
   for (const [country, code] of Object.entries(countryMap)) {
-    if (lowerQuery.includes(country)) {
+    if (changeQueryToLowerCase.includes(country)) {
       filters.country_id = code;
       break;
     }
   }
 
-  // If no filters were extracted, return null (can't interpret)
   if (Object.keys(filters).length === 0) {
+    console.log("Can't find any filters in the query:", query);
     return null;
   }
 
